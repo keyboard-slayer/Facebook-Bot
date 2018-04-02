@@ -6,16 +6,7 @@ from getpass import getpass
 import time
 
 
-class PiewDieBot(object):
-    def __init__(self):
-        self.driver = webdriver.PhantomJS()
-        self.driver.get("https://www.pewdiebot.com/en/")
-
-    def get(self):
-        return self.driver.execute_script("return cleverbot.reply")
-
-    def send(self, reply):
-        return self.driver.execute_script("cleverbot.sendAI('%s')" % (reply))
+from cleverbot import * # For this git: https://github.com/0v3rl0w/Unofficial-Cleverbot-Api
 
 class Facebook(object):
     def __init__(self):
@@ -38,7 +29,7 @@ class Facebook(object):
         self.driver.find_element_by_class_name("_38lh").click()
 if __name__ == "__main__":
     facebook = Facebook()
-    bot = PiewDieBot()
+    bot = Cleverbot()
     time.sleep(3)
     lastestMsg = bot.get()
     facebook.sendMsg(lastestMsg)

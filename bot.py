@@ -16,20 +16,28 @@ class Facebook(object):
         self.driver.get("https://www.messenger.com")
         self.login()
         os.system("clear")
-        raw_input("Press Enter when you're ready to spam...")
+        str(input("Press Enter when you're ready to spam..."))
         self.name = self.getName()
 
     def login(self):
-        self.driver.find_element_by_id("email").send_keys(raw_input("Email Address: "))
+        self.driver.find_element_by_id("email").send_keys(str(input("Email Address: ")))
         self.driver.find_element_by_id("pass").send_keys(getpass(prompt="Password: "))
         self.driver.find_element_by_name("login").click()
+
+    def inMsg(self, msg):
+        msgRec = self.driver.find_elements_by_xpath("//*[contains(@class, '_aok')]")
+
+        for received in msgRec:
+             if msg == received.text:
+                 return True
+        return False
 
     def getMsg(self):
          return self.driver.find_elements_by_xpath("//*[contains(@class, '_aok')]")[-1].text
 
     def getName(self):
         name = self.driver.find_element_by_class_name("_3oh-").text
-        return name.encode("utf-8").replace("à", "a").replace("ï", "i").replace("ô", "o").replace("ê", "e").replace("é", "e").replace("è", "e").lower()
+        return name.replace("à", "a").replace("ï", "i").replace("ô", "o").replace("ê", "e").replace("é", "e").replace("è", "e").lower()
 
     def sendMsg(self, msg):
         try:
@@ -42,18 +50,31 @@ if __name__ == "__main__":
     facebook = Facebook()
     bot = Cleverbot()
     print(facebook.name.split(' ')[0])
+    lastestMsg = ""
     bot.send("Je m'appelle {}".format(facebook.name.split(' ')[0]))
-    facebook.sendMsg("Bonjour {}".format(facebook.name.split(' ')[0]))
-    lastestMsg = "Bonjour {}".format(facebook.name.split(' ')[0])
+    if not facebook.inMsg("Bonjour {}".format(facebook.name.split(' ')[0])):
+        facebook.sendMsg("Bonjour {}".format(facebook.name.split(' ')[0]))
+        lastestMsg = "Bonjour {}".format(facebook.name.split(' ')[0])
+    else:
+        code = str(facebook.getMsg())
+        print(code)
+        bot.send(code)
+        lastestMsg = bot.get().lower()
+        print(lastestMsg)
+        facebook.sendMsg(lastestMsg)
+
     lastestTmp = ""
     while True:
-        received = facebook.getMsg().encode("utf-8")
+        received = facebook.getMsg()
         time.sleep(1)
         print(received)
         if received != lastestMsg:
             lastestTmp = lastestMsg
-            bot.send(str(received))
+            try:
+                bot.send(str(received))
+            except:
+                pass
             lastestMsg = bot.get().lower()
             print(lastestMsg)
-            if "t'appelle" not in lastestMsg and lastestMsg != lastestTmp:
+            if "appelle" not in lastestMsg and lastestMsg != lastestTmp:
                 facebook.sendMsg(lastestMsg)

@@ -50,6 +50,10 @@ if __name__ == "__main__":
     username = input("Login: ")
     password = getpass(prompt="Password: ")
 
+    bot.login(username, password)
+
+    input("Press enter, when you are ready ...")
+
     ai.send("Hi, my name is {bot.getReceiverName()} ")
     
     waitAnswer()
